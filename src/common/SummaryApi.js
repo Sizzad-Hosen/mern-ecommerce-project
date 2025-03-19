@@ -83,6 +83,34 @@ const SummaryApi = {
     createProduct:{
         url:"api/product/create",
         method:"post"
+    },
+    getProduct:{
+        url:"api/product/get",
+        method:"get"
+    },
+    updateProductDetails:{
+       url:"api/product/updateProduct",
+       method:"put"
+    },
+    deleteProduct:{
+        url:"api/product/delete",
+        method:"delete"
+    },
+    getProductByCategory:{
+        url:"api/product/get-product-by-category",
+        method:"post"
+    },
+    getProductByCategoryAndSubCategory:{
+         url:"api/product/get-product-by-category-and-subcategory",
+         method:"post"
+    },
+    getProductDetails:{
+        url:"api/product/get-product-details",
+        method:"post"
+    },
+    searchProduct:{
+        url:"api/product/search-product",
+        method:"post"
     }
     
 }

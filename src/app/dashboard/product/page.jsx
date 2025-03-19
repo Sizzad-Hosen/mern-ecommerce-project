@@ -1,4 +1,5 @@
 import AdminPermission from '@/components/AdminPermission'
+import ProductAdmin from '@/pages/ProductAdmin'
 import React from 'react'
 
 const page = () => {
@@ -6,7 +7,7 @@ const page = () => {
     <AdminPermission>
 
 
-    <div>page</div>
+   <ProductAdmin></ProductAdmin>
 
 </AdminPermission>
   )
