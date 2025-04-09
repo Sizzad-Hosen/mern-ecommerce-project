@@ -15,6 +15,7 @@ const DashboardLayout = ({ children }) => {
   const menuItems = [
     { name: "Profile", icon: <FaUserCircle />, path: "/dashboard/profile" },
     { name: "My Orders", icon: <FaShoppingCart />, path: "/dashboard/myOrders" },
+    { name: "Save Address", icon: <FaShoppingCart />, path: "/dashboard/address" },
     { name: "More", icon: <FaCog />, path: "/dashboard/more" },
   ];
 
