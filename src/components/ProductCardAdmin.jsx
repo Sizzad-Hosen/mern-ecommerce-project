@@ -69,16 +69,16 @@ const ProductCardAdmin = ({ data, fetchProductData }) => {
       </div>
       <p className='text-ellipsis line-clamp-2 font-medium'>{data?.name}</p>
       <p className='text-slate-400'>{data?.unit}</p>
-      <div className='grid grid-cols-2 gap-3 py-2'>
+      <div className='grid grid-cols-2 gap-3 py-3'>
         <button
           onClick={() => setEditOpen(true)}
-          className='border px-1 py-1 text-sm border-green-600 bg-green-100 text-green-800 hover:bg-green-200 rounded'
+          className='border px-2 py-1 p-2 text-sm btn-primary bg-green-100   rounded'
         >
           Edit
         </button>
         <button
           onClick={handleDelete}
-          className='border px-1 py-1 text-sm border-red-600 bg-red-100 text-red-600 hover:bg-red-200 rounded'
+          className="bg-red-500 text-sm hover:bg-red-900 btn  text-white px-2 py-1 p-2 rounded"
         >
           Delete
         </button>

@@ -72,7 +72,7 @@ const UserProfileAvatarEdit = ({ close }) => {
         {/* File Upload Form */}
         <form>
           <label htmlFor="uploadProfile">
-            <div className="border border-gray-300 cursor-pointer hover:bg-gray-200 px-4 py-1 rounded text-sm my-3">
+            <div className="border border-gray-300 cursor-pointer btn-primary hover:bg-gray-200 px-4 py-1 rounded text-sm my-3">
               {loading ? "Uploading..." : "Upload"}
             </div>
             <input

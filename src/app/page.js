@@ -7,6 +7,6 @@ export default function HomePage() {
 
 
   return (
-    <Home></Home>
+    <Home ></Home>
   );
 }

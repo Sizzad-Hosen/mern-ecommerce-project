@@ -48,7 +48,7 @@ const Login = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-base-200">
       <div className="card w-full max-w-sm bg-base-100 shadow-xl p-6">
-        <h2 className="text-3xl font-bold text-center">Welcome Back</h2>
+        <h2 className="text-3xl font-bold text-primary text-center">Welcome <span className="text-3xl text-red-500">Back</span></h2>
         <p className="text-sm text-gray-500 text-center mb-4">Sign in to continue</p>
 
         <form onSubmit={handleSubmit}>
@@ -109,7 +109,7 @@ const Login = () => {
 
         {/* Register Redirect */}
         <div className="mt-4 text-center">
-          <p className="text-sm">
+        <p className="text-blue-600 text-xl">
             Don't have an account?{" "}
             <span
               className="text-primary font-medium cursor-pointer hover:underline"

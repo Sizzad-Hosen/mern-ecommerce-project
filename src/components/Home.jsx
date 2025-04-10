@@ -56,8 +56,8 @@ const Home = () => {
   };
 
   return (
-    <section className='bg-white'>
-      <div className='container mx-auto'>
+    <section className='bg-white  max-w-7xl mx-auto'>
+      <div className=''>
         <div className={`w-full h-full min-h-48 bg-blue-100 rounded  && "animate-pulse my-2"`}>
           <img src={"https://i.postimg.cc/5N8bzYRt/banner.jpg"} className='w-full h-full hidden lg:block' alt='#' />
           <img src={"https://i.postimg.cc/5211S4hS/banner-mobile.jpg"} className='w-full h-full lg:hidden' alt='#' />

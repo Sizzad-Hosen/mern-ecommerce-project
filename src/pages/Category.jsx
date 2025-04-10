@@ -167,7 +167,7 @@ const UploadCategoryModel = ({ close }) => {
           setIsUpdate(false); // Switch to add mode
           setData({ _id: "", name: "", image: "" }); // Reset form for adding new category
         }}
-        className="bg-blue-500 text-white px-4 py-2 rounded"
+        className="btn-primary text-white px-4 py-2 rounded"
       >
         Add Category
       </button>

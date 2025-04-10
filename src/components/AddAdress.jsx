@@ -78,7 +78,7 @@ const AddAddress = ({ close, fetchAddress }) => {
 
           <button
             type="submit"
-            className="bg-blue-600 text-white w-full py-2 font-semibold mt-4 rounded hover:bg-blue-700"
+            className="btn-primary text-white w-full py-2 font-semibold mt-4 rounded"
           >
             Submit
           </button>

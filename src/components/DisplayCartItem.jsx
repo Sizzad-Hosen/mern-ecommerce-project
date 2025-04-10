@@ -68,7 +68,7 @@ const DisplayCartItem = ({ close }) => {
   };
 
   return (
-    <section className="p-6">
+    <section className=" max-w-7xl mx-auto ">
       <div className="bg-white w-full min-h-2.5 max-h-screen ml-auto">
         <div className="flex items-center p-4 shadow-md gap-3 justify-between">
           <h2 className="font-semibold">Cart</h2>
@@ -82,7 +82,7 @@ const DisplayCartItem = ({ close }) => {
                 <p>{DisplayPriceInRupees(notDiscountTotalPrice - totalPrice)}</p>
               </div>
 
-              <div className="bg-white rounded-lg p-4 grid gap-5 overflow-auto">
+              <div className="bg-white rounded-lg p-4 grid gap-11 overflow-auto">
                 {cartItem.map((item) => (
                   <div key={item?._id} className="flex w-full gap-4">
                     <div className="w-16 h-16 min-h-16 min-w-16 border rounded">
@@ -152,7 +152,7 @@ const DisplayCartItem = ({ close }) => {
               <Link
                 href="/"
                 onClick={close}
-                className="block bg-green-600 px-4 py-2 text-white rounded mt-4"
+                className="block btn-primary px-4 py-2 text-white rounded mt-4"
               >
                 Shop Now
               </Link>
@@ -162,7 +162,7 @@ const DisplayCartItem = ({ close }) => {
 
         {cartItem.length > 0 && (
           <div className="p-2">
-            <div className="bg-green-700 text-neutral-100 px-4 font-bold text-base py-4 rounded flex items-center gap-4 justify-between">
+            <div className="bg-[#0059b3]  text-neutral-100 px-4 font-bold text-base py-4 rounded flex items-center gap-4 justify-between">
               <div>{DisplayPriceInRupees(totalPrice)}</div>
               <button onClick={redirectToCheckoutPage} className="flex items-center gap-1">
                 Proceed <FaCaretRight />

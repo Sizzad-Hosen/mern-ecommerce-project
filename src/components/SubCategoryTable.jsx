@@ -43,7 +43,7 @@ const SubcategoryPage = ({ data }) => {
                                         {subcategory.category?.map((cat) => cat.name).join(", ") || "No Category"}
                                     </td>
                                     <td className="border p-2 flex gap-2">
-                                        <button className="bg-blue-500 text-white px-2 py-1 rounded">Edit</button>
+                                        <button className="btn-primary text-white px-2 py-1 rounded">Edit</button>
                                         <button className="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
                                     </td>
                                 </tr>
@@ -55,7 +55,7 @@ const SubcategoryPage = ({ data }) => {
                 {/* Pagination */}
                 <div className="flex justify-between items-center gap-4 mt-4">
                     <button
-                        className={`px-4 py-2 rounded ${currentPage === 1 ? "bg-gray-300" : "bg-blue-500 text-white"}`}
+                        className={`px-4 py-2  btn-primary rounded ${currentPage === 1 ? "bg-gray-300" : "bg-blue-500 text-white"}`}
                         onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                         disabled={currentPage === 1}
                     >
@@ -63,7 +63,7 @@ const SubcategoryPage = ({ data }) => {
                     </button>
                     <span>Page {currentPage} of {Math.ceil(data.length / itemsPerPage)}</span>
                     <button
-                        className={`px-4 py-2 rounded ${indexOfLastItem >= data.length ? "bg-gray-300" : "bg-blue-500 text-white"}`}
+                        className={`px-4 btn-primary py-2 rounded ${indexOfLastItem >= data.length ? "bg-gray-300" : "bg-blue-500 text-white"}`}
                         onClick={() => setCurrentPage((prev) => (indexOfLastItem < data.length ? prev + 1 : prev))}
                         disabled={indexOfLastItem >= data.length}
                     >

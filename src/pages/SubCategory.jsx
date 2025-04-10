@@ -131,7 +131,7 @@ const UploadSubCategoryModel = () => {
             <div className="flex justify-between p-4">
                 <h3 className="text-2xl font-bold">SubCategory</h3>
                 <button
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    className="btn-primary text-white px-4 py-2 rounded hover:bg-blue-700"
                     onClick={() => setIsOpen(true)}
                 >
                     Add Subcategory
@@ -225,7 +225,7 @@ const UploadSubCategoryModel = () => {
                             </div>
 
                             <button
-                                className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-200 disabled:cursor-not-allowed"
+                                className="px-4 py-2 btn-primary text-white  disabled:bg-gray-200 disabled:cursor-not-allowed"
                                 disabled={!subCategoryData.name || !subCategoryData.image || !subCategoryData.category.length}
                             >
                                 {loading ? "Submitting..." : "Submit"}

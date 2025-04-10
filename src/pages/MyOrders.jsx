@@ -83,7 +83,7 @@ const MyOrders = () => {
             <button
               onClick={handlePrev}
               disabled={currentPage === 1}
-              className="px-4 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+              className="px-4 py-1 btn-primary rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
             >
               Previous
             </button>
@@ -95,7 +95,7 @@ const MyOrders = () => {
             <button
               onClick={handleNext}
               disabled={currentPage === totalPages}
-              className="px-4 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+              className="px-4 py-1 btn-primary rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
             >
               Next
             </button>

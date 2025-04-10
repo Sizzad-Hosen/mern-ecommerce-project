@@ -1,8 +1,7 @@
 const nextConfig = {
   images: {
-    domains: ['res.cloudinary.com'],  // Add this line to allow Cloudinary images
+    domains: ['i.postimg.cc', 'res.cloudinary.com'], // Add your allowed image domains here
   },
-  };
-  
+};
+
 export default nextConfig;
-   

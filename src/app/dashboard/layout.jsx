@@ -31,14 +31,14 @@ const DashboardLayout = ({ children }) => {
   return (
     <div className="flex h-screen">
       {/* Sidebar - Always Visible */}
-      <div className="w-1/3 bg-gray-100 p-4">
+      <div className="w-1/3 bg-gray-200 p-4">
         <h2 className="text-2xl font-semibold mb-6">Dashboard</h2>
         <ul className="space-y-4">
           {menuItems.map((item) => (
             <li
               key={item.path}
-              className={`flex items-center cursor-pointer p-2 rounded-lg transition-colors ${
-                pathname === item.path ? "bg-green-300 text-black" : "hover:bg-gray-300 hover:text-black"
+              className={`flex items-center primary cursor-pointer p-2 rounded-lg transition-colors ${
+                pathname === item.path ? "primary text-black" : " hover:text-black"
               }`}
               onClick={() => router.push(item.path)}
             >

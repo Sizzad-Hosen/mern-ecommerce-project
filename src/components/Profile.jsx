@@ -86,7 +86,7 @@ const Profile = () => {
 
                 // Fetch updated user details after update
                 const updatedUserData = await fetchUserDetails();
-                console.log("Updated User Data:", updatedUserData);
+                
 
                 dispatch(setUserDetails(updatedUserData.data));
                 setUserData(updatedUserData.data);
@@ -116,7 +116,7 @@ const Profile = () => {
             </div>
             <button
                 onClick={() => setProfileAvatarEdit(true)}
-                className="text-sm min-w-20 border border-primary-100 hover:border-primary-200 hover:bg-primary-200 px-3 py-1 rounded-full mt-3"
+                className="text-sm min-w-20 border border-primary-100 btn-primary px-3 py-1 rounded-full mt-3"
             >
                 Edit
             </button>
@@ -170,7 +170,7 @@ const Profile = () => {
                 </div>
 
                 <button
-                    className="border px-4 py-2 font-semibold hover:bg-primary-100 border-primary-100 text-primary-200 hover:text-neutral-800 rounded"
+                    className="border px-4 py-2 font-semibold btn-primary border-primary-100 text-primary-200 hover:text-neutral-800 rounded"
                     disabled={loading}
                 >
                     {loading ? "Loading..." : "Submit"}

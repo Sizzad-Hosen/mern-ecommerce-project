@@ -247,10 +247,10 @@ console.log("response.data.id:", response?.data?.id);
             </div>
           </div>
           <div className="w-full flex flex-col gap-4 mt-4">
-            <button className="py-2 px-4 bg-green-600 hover:bg-green-700 rounded text-white font-semibold" onClick={handleOnlinePayment}>
+            <button className="py-2 px-4 btn-primary rounded text-white font-semibold" onClick={handleOnlinePayment}>
               Online Payment
             </button>
-            <button className="py-2 px-4 border-2 border-green-600 font-semibold text-green-600 hover:bg-green-600 hover:text-white" onClick={handleCashOnDelivery}>
+            <button className="py-2 px-4 border-2 border-[#0059b3]  font-semibold text-[#0059b3]  hover:bg-[#0059b3]  hover:text-white" onClick={handleCashOnDelivery}>
               Cash on Delivery
             </button>
           </div>

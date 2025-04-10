@@ -55,7 +55,7 @@ const Register = () => {
   return (
     <section className="w-full container mx-auto px-2">
       <div className="bg-white my-4 w-full max-w-lg mx-auto rounded p-7">
-        <p>Welcome to Binkeyit</p>
+        <p className="text-3xl font-bold ">Welcome to E<span className="text-blue-700 text-3xl">Shop </span></p>
         <form className="grid gap-4 mt-6" onSubmit={handleSubmit}>
           <div className="grid gap-1">
             <label htmlFor="name">Name :</label>
@@ -119,15 +119,15 @@ const Register = () => {
           <button
             disabled={!isValid}
             className={`${
-              isValid ? "bg-green-800 hover:bg-green-700" : "bg-gray-500"
+              isValid ? "btn-primary" : "btn-primary"
             } text-white py-2 rounded font-semibold my-3 tracking-wide`}
           >
             Register
           </button>
         </form>
-        <p>
+        <p className="text-blue-600 text-xl">
           Already have an account?{" "}
-          <Link href="/login" className="font-semibold text-green-700 hover:text-green-800">
+          <Link href="/login" className="font-semibold link link-hover text-blue-800 text-xl">
             Login
           </Link>
         </p>
