@@ -1,9 +1,13 @@
+import AdminPermission from '@/components/AdminPermission'
 import Address from '@/pages/Address'
 import React from 'react'
 
 const AddressPage = () => {
   return (
-    <Address></Address>
+    <AdminPermission>
+   <Address></Address>
+    </AdminPermission>
+ 
   )
 }
 

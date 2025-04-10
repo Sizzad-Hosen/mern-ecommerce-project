@@ -12,6 +12,7 @@ import { DisplayPriceInRupees } from "@/utilis/DisplayPriceInRupees";
 import AxiosToastError from "@/utilis/AxiosToastError";
 import { pricewithDiscount } from '@/utilis/PriceWithDiscount';
 import { data } from "react-router-dom";
+import { loadStripe } from '@stripe/stripe-js'
 
 
 const CheckoutPage = () => {
@@ -47,7 +48,7 @@ const [addressList , setAddressList]  = useState([])
         data: { userId: user._id },
 
       });
-      console.log('data', data)
+   
 
       setAddressList(response.data.data || []);
     } catch (error) {
@@ -99,15 +100,89 @@ const [addressList , setAddressList]  = useState([])
         toast.success(responseData.message);
         router.push("/success");
       }
+      else{
+        router.push("/cancle");
+      }
     } catch (error) {
       AxiosToastError(error);
     }
   };
 
-  const handleOnlinePayment = async () => {
-    // You can add Stripe integration here
-    toast("Online Payment method coming soon...");
-  };
+const handleOnlinePayment = async () => {
+  try {
+    toast.loading('Redirecting to payment...')
+
+    // Log input values
+    console.log("cartItem:", cartItem);
+    console.log("addressList:", addressList);
+    console.log("selectAddress:", selectAddress);
+    console.log("totalPrice:", totalPrice);
+
+    // ✅ Stripe public key (NEXT_PUBLIC_ is required for frontend use in Next.js)
+    const stripePublicKey = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY
+
+    if (!stripePublicKey) {
+      toast.dismiss()
+      toast.error('Stripe public key not found')
+      return
+    }
+
+    console.log("Stripe Public Key:", stripePublicKey); // Check if it's correct
+
+    const stripe = await loadStripe(stripePublicKey)
+
+    if (!stripe) {
+      toast.dismiss()
+      toast.error('Failed to load Stripe')
+      return
+    }
+
+    const response = await Axios({
+      ...SummaryApi.payment_url,
+      data: {
+        list_items: cartItem,
+        addressId: addressList[selectAddress]?._id,
+        subTotalAmt: totalPrice,
+        totalAmt: totalPrice,
+      },
+    });
+    
+    console.log("Stripe API Response:", response);
+    console.log("response.data:", response?.data);
+console.log("response.data.id:", response?.data?.id);
+
+    const sessionId = response?.data?.id;
+    
+    if (!sessionId) {
+      toast.dismiss();
+      toast.error('Stripe session ID not found');
+      return;
+    }
+    
+    const result = await stripe.redirectToCheckout({ sessionId });
+    
+
+    if (result?.error) {
+      toast.dismiss()
+      toast.error(result.error.message)
+      return
+    }
+
+    // ✅ Optional: Clear cart after initiating payment
+    if (fetchCartData) {
+      fetchCartData()
+    } else {
+      console.warn("fetchCartData is not defined");
+    }
+
+    toast.dismiss()
+
+  } catch (error) {
+    console.error('[Stripe Payment Error]', error)
+    toast.dismiss()
+    toast.error('Payment failed. Please try again.')
+  }
+}
 
   return (
     <section className="bg-blue-50">
