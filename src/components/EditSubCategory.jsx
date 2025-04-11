@@ -11,6 +11,7 @@ const EditSubCategory = ({ close, data,fetchData}) => {
 
     const [allCategory, setAllCategory] = useState([]);
 
+    const [loading, setLoading] = useState(false);
 
 
     // Fetch categories
@@ -83,7 +84,7 @@ const EditSubCategory = ({ close, data,fetchData}) => {
 
     const handleSubmitSubCategory = async (e) => {
         e.preventDefault();
-
+        setLoading(true);
    
 
         try {
@@ -92,18 +93,28 @@ const EditSubCategory = ({ close, data,fetchData}) => {
                 data: subCategoryData,
             });
             const { data: responseData } = response;
-            console.log("data", responseData)
+          
 
             if (responseData.success) {
                 toast.success(responseData.message);
+                await fetchData()
                 close();
-                fetchData()
           
             }
         } catch (error) {
             toast.error("Failed to update subcategory");
         }
+    finally {
+        setLoading(false);
+    }
     };
+
+    {loading && (
+        <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
+            <p className="text-lg font-semibold text-primary-200 animate-pulse">Updating...</p>
+        </div>
+    )}
+    
 
     return (
         <section className="fixed top-0 right-0 bottom-0 left-0 bg-neutral-800 bg-opacity-70 z-50 flex items-center justify-center p-4">
@@ -190,8 +201,8 @@ const EditSubCategory = ({ close, data,fetchData}) => {
                     <button
                         className={`px-4 py-2 border ${
                             subCategoryData?.name && subCategoryData?.image && subCategoryData?.category.length
-                                ? "bg-primary-200 hover:bg-primary-100"
-                                : "bg-gray-200"
+                                ? "btn-primary"
+                                : "btn-primary"
                         } font-semibold`}
                     >
                         Submit

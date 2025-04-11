@@ -1,35 +1,23 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { IoClose } from "react-icons/io5";
+import { IoClose, IoPencil, IoTrash } from "react-icons/io5";
 import toast from "react-hot-toast";
 import SummaryApi from "@/common/SummaryApi";
 import AxiosToastError from "@/utilis/AxiosToastError";
 import Axios from "@/utilis/Axios";
 import uploadImage from "@/utilis/uploadImage";
-import { IoPencil, IoTrash } from "react-icons/io5"; // Import the icons
 import Swal from 'sweetalert2';
-
-
 
 const UploadCategoryModel = ({ close }) => {
   const [categoryData, setCategoryData] = useState([]);
-  
-  const [data, setData] = useState({
-    _id: "",
-    name: "",
-    image: "",
-  });
-
+  const [data, setData] = useState({ _id: "", name: "", image: "" });
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const [isUpdate, setIsUpdate] = useState(false); // To track whether we're updating or adding a new category
+  const [isUpdate, setIsUpdate] = useState(false);
 
-  // Fetch categories from the backend
   const fetchCategoryData = async () => {
     try {
-      const response = await Axios({
-        ...SummaryApi.getCategory,
-      });
+      const response = await Axios({ ...SummaryApi.getCategory });
       setCategoryData(response.data.data);
     } catch (error) {
       console.log("Error fetching categories:", error);
@@ -42,63 +30,40 @@ const UploadCategoryModel = ({ close }) => {
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
-    setData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!data.name || !data.image) {
-      toast.error("Please fill in all fields!");
-      return;
-    }
-
+    if (!data.name || !data.image) return toast.error("Please fill in all fields!");
     try {
       setLoading(true);
-      let response;
-      if (isUpdate) {
-        response = await Axios({
-          ...SummaryApi.updateCategory, // API for updating category
-          data: data,
-        });
-      } else {
-        response = await Axios({
-          ...SummaryApi.addCategory, // API for adding new category
-          data: data,
-        });
-      }
-
+      const response = await Axios({
+        ...(isUpdate ? SummaryApi.updateCategory : SummaryApi.addCategory),
+        data: data,
+      });
       const { data: responseData } = response;
       if (responseData.success) {
         toast.success(responseData.message);
-        close(); // Close modal after success
-        setOpenModal(false); // Close modal after success
-        fetchCategoryData(); // Refresh category list after adding/updating
+        close();
+        setOpenModal(false);
+        fetchCategoryData();
       }
     } catch (error) {
-      AxiosToastError(error); // Handle error with custom function
+      AxiosToastError(error);
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false);
     }
   };
 
   const handleUploadCategoryImage = async (e) => {
     const file = e.target.files[0];
-    if (!file) {
-      toast.error("No file selected");
-      return;
-    }
+    if (!file) return toast.error("No file selected");
     try {
       const response = await uploadImage(file);
       const { data: ImageResponse } = response;
-      if (ImageResponse && ImageResponse.data && ImageResponse.data.url) {
-        setData((prev) => ({
-          ...prev,
-          image: ImageResponse.data.url,
-        }));
+      if (ImageResponse?.data?.url) {
+        setData((prev) => ({ ...prev, image: ImageResponse.data.url }));
       } else {
         toast.error("Failed to upload image. No URL found.");
       }
@@ -108,21 +73,17 @@ const UploadCategoryModel = ({ close }) => {
     }
   };
 
-  // Handle category update
   const handleUpdate = (category) => {
     setData({
-      _id: category._id, // Set _id for updating
+      _id: category._id,
       name: category.name,
       image: category.image,
     });
-    setIsUpdate(true); // Flag as update mode
-    setOpenModal(true); // Open modal for updating
+    setIsUpdate(true);
+    setOpenModal(true);
   };
 
-  // Handle category delete
- 
   const handleDelete = async (categoryId) => {
-    // Show confirmation alert using SweetAlert
     Swal.fire({
       title: 'Are you sure?',
       text: "You won't be able to revert this!",
@@ -140,12 +101,9 @@ const UploadCategoryModel = ({ close }) => {
             data: { _id: categoryId },
           });
           const { data: responseData } = response;
-  
-          console.log("data", responseData); // Log the response data to console for debugging
-  
           if (responseData.success) {
             toast.success(responseData.message);
-            fetchCategoryData(); // Refresh the list after deletion
+            fetchCategoryData();
           } else {
             toast.error("Something went wrong, try again.");
           }
@@ -157,107 +115,105 @@ const UploadCategoryModel = ({ close }) => {
       }
     });
   };
-  
-  return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Category Management</h1>
-      <button
-        onClick={() => {
-          setOpenModal(true);
-          setIsUpdate(false); // Switch to add mode
-          setData({ _id: "", name: "", image: "" }); // Reset form for adding new category
-        }}
-        className="btn-primary text-white px-4 py-2 rounded"
-      >
-        Add Category
-      </button>
 
-      {/* Render categories */}
-      <div className="my-4">
-        <h2 className="text-xl font-semibold mb-2">Categories</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+  return (
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4 text-center">Category Management</h1>
+      <div className="flex justify-center mb-6">
+        <button
+          onClick={() => {
+            setOpenModal(true);
+            setIsUpdate(false);
+            setData({ _id: "", name: "", image: "" });
+          }}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition"
+        >
+          Add Category
+        </button>
+      </div>
+
+      {/* Category Grid */}
+      <div className="my-4 mx-auto max-w-[1400px]">
+        <h2 className="text-xl font-semibold mb-4 text-center">All Categories</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 px-2 sm:px-4">
           {categoryData.length > 0 ? (
             categoryData.map((category) => (
               <div
                 key={category._id}
-                className="bg-white w-36 h-44 shadow-lg rounded-lg overflow-hidden flex flex-col items-center p-4"
+                className="bg-white shadow-md rounded-lg overflow-hidden flex flex-col items-center p-4"
               >
                 <img
                   src={category.image}
                   alt={category.name}
-                  className="rounded-md mr-2 w-full object-scale-down"
+                  className="w-full h-24 object-contain mb-2 rounded"
                 />
-                <h3 className="text-lg font-semibold text-center">{category.name}</h3>
-                <div className="flex gap-2 mt-2">
+                <h3 className="text-base font-medium text-center">{category.name}</h3>
+                <div className="flex gap-2 mt-3">
                   <button
                     onClick={() => handleUpdate(category)}
-                    className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600"
+                    className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full"
                   >
-                    <IoPencil size={20} />
+                    <IoPencil size={18} />
                   </button>
                   <button
                     onClick={() => handleDelete(category._id)}
-                    className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                    className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full"
                   >
-                    <IoTrash size={20} />
+                    <IoTrash size={18} />
                   </button>
                 </div>
               </div>
             ))
           ) : (
-            <div className="text-center col-span-3">No categories available</div>
+            <div className="text-center col-span-full">No categories available</div>
           )}
         </div>
       </div>
 
-      {/* Category Modal */}
+      {/* Modal */}
       {openModal && (
-        <section className="fixed top-0 bottom-0 left-0 right-0 p-4 bg-neutral-800 bg-opacity-60 flex items-center justify-center">
-          <div className="bg-white max-w-4xl w-full p-4 rounded">
-            <div className="flex items-center justify-between">
-              <h1 className="font-semibold">{isUpdate ? "Update Category" : "Add Category"}</h1>
-              <button
-                onClick={() => setOpenModal(false)}
-                className="w-fit block ml-auto"
-              >
-                <IoClose size={25} />
+        <section className="fixed inset-0 p-4 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-lg p-6 rounded-lg shadow-lg">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">
+                {isUpdate ? "Update Category" : "Add Category"}
+              </h2>
+              <button onClick={() => setOpenModal(false)}>
+                <IoClose size={24} />
               </button>
             </div>
-            <form className="my-3 grid gap-2" onSubmit={handleSubmit}>
-              <div className="grid gap-1">
-                <label htmlFor="categoryName">Name</label>
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div>
+                <label htmlFor="categoryName" className="block text-sm font-medium mb-1">
+                  Name
+                </label>
                 <input
                   type="text"
                   id="categoryName"
-                  placeholder="Enter category name"
-                  value={data?.name}
                   name="name"
+                  value={data?.name}
                   onChange={handleOnChange}
-                  className="bg-blue-50 p-2 border border-blue-100 focus-within:border-primary-200 outline-none rounded"
+                  placeholder="Enter category name"
+                  className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
                 />
               </div>
-              <div className="grid gap-1">
-                <p>Image</p>
-                <div className="flex gap-4 flex-col lg:flex-row items-center">
-                  <div className="border bg-blue-50 h-36 w-full lg:w-36 flex items-center justify-center rounded">
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Image</label>
+                <div className="flex flex-col sm:flex-row gap-4 items-center">
+                  <div className="border bg-gray-100 w-full sm:w-36 h-36 flex items-center justify-center rounded">
                     {data.image ? (
                       <img
-                        alt="category"
-                        src={data?.image}
-                        className="w-full h-full object-scale-down"
+                        src={data.image}
+                        alt="Category"
+                        className="w-full h-full object-contain"
                       />
                     ) : (
-                      <p className="text-sm text-neutral-500">No Image</p>
+                      <span className="text-sm text-gray-500">No Image</span>
                     )}
                   </div>
                   <label htmlFor="uploadCategoryImage">
-                    <div
-                      className={`${
-                        !data?.name
-                          ? "bg-gray-300"
-                          : "border-primary-200 hover:bg-primary-100"
-                      } px-4 py-2 rounded cursor-pointer border font-medium`}
-                    >
+                    <div className="bg-blue-100 border border-blue-300 px-4 py-2 rounded-md cursor-pointer hover:bg-blue-200 transition">
                       Upload Image
                     </div>
                     <input
@@ -272,12 +228,13 @@ const UploadCategoryModel = ({ close }) => {
               </div>
 
               <button
-                className={`${
-                  data?.name && data?.image
-                    ? "bg-yellow-300 hover:bg-primary-100"
-                    : "bg-blue-200 cursor-not-allowed"
-                } py-2 font-semibold transition-all duration-300 ease-in-out`}
                 disabled={loading || !data?.name || !data?.image}
+                type="submit"
+                className={`w-full py-2 text-white font-semibold rounded-md ${
+                  data?.name && data?.image
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-blue-300 cursor-not-allowed"
+                }`}
               >
                 {loading ? "Saving..." : isUpdate ? "Update Category" : "Add Category"}
               </button>

@@ -9,6 +9,7 @@ import { IoSearchOutline } from "react-icons/io5";
 import Axios from '@/utilis/Axios';
 import SummaryApi from '@/common/SummaryApi';
 import AxiosToastError from '@/utilis/AxiosToastError';
+import Loading from '@/components/Loading';
 
 const ProductAdmin = () => {
 
@@ -105,7 +106,7 @@ const ProductAdmin = () => {
         </div>
         {
           loading && (
-            <span className="loading loading-spinner loading-xl"></span>
+           <Loading></Loading>
           )
         }
 
@@ -118,7 +119,7 @@ const ProductAdmin = () => {
                 {
                   productData.map((p,index)=>{
                     return(
-                      <ProductCardAdmin data={p} fetchProductData={fetchProductData}  />
+                      <ProductCardAdmin key={p.id}  data={p} fetchProductData={fetchProductData}  />
                     )
                   })
                 }

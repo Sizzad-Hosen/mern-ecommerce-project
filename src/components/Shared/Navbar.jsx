@@ -18,6 +18,8 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const user = useSelector((state) => state.user?.user);
+  console.log('user', user);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [cartData, setCartData] = useState([]);
@@ -169,7 +171,7 @@ const Navbar = () => {
                 <div className="w-10 rounded-full">
                   <img
                     alt="User Avatar"
-                    src={user?.profilePicture || "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"}
+                    src={user?.avatar || "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"}
                   />
                 </div>
               </div>
@@ -181,9 +183,7 @@ const Navbar = () => {
                     <li className="primary rounded-md">
                       <Link href="/dashboard/myOrders" className="block p-2">My Orders</Link>
                     </li>
-                    <li className="primary rounded-md">
-                      <Link href="/settings" className="block p-2">Settings</Link>
-                    </li>
+                  
                     <li className="primary rounded-md">
                       <button onClick={handleLogout} className="block p-2">Logout</button>
                     </li>

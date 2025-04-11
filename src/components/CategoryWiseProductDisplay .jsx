@@ -11,6 +11,7 @@ import AxiosToastError from "@/utilis/AxiosToastError";
 import CardLoading from "./CardLoading";
 import CardProduct from "./CardProduct";
 
+
 const CategoryWiseProductDisplay = ({ id, name }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);

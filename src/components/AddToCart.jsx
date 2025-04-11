@@ -14,7 +14,7 @@ const AddToCartButton = ({ data }) => {
   const [qty, setQty] = useState(0);
   const [cartItemDetails, setCartItemDetails] = useState(null);
   const [cartData, setCartData] = useState([]);
-console.log("cart", cartData)
+
   const user = useSelector((state) => state.user?.user);
 
   // Fetch Cart Data
@@ -93,7 +93,7 @@ console.log("cart", cartData)
 
   const handleRemoveFromCart = async () => {
     if (!cartItemDetails?._id) return;
-console.log('cart id', cartItemDetails?._id)
+
 
   // Optimistically remove item before API call
     const prevQty = qty;
@@ -107,8 +107,6 @@ console.log('cart id', cartItemDetails?._id)
         data: { cartItemId: cartItemDetails?._id },
 
       });
-
-      console.log('data', data);
 
       if (!response.data.success) {
         throw new Error(response.data.message);
@@ -124,29 +122,29 @@ console.log('cart id', cartItemDetails?._id)
   };
 
   return (
-    <div className="w-full max-w-[150px]">
+    <div className="w-full max-w-[150px] h-[38px]">
       {isAvailableCart ? (
-        <div className="flex w-full h-full">
+        <div className="flex w-full h-full gap-1">
           <button
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               qty > 1 ? updateCartQuantity(qty - 1) : handleRemoveFromCart();
             }}
-            className="bg-green-600 hover:bg-green-700 text-white flex-1 w-full p-1 rounded flex items-center justify-center"
+            className="bg-green-600 hover:bg-green-700 text-white w-full p-1 rounded flex items-center justify-center"
           >
             <FaMinus />
           </button>
-          <p className="flex-1 w-full font-semibold px-1 flex items-center justify-center">
+          <div className="flex items-center justify-center font-semibold w-full px-1">
             {qty}
-          </p>
+          </div>
           <button
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               updateCartQuantity(qty + 1);
             }}
-            className="bg-green-600 hover:bg-green-700 text-white flex-1 w-full p-1 rounded flex items-center justify-center"
+            className="bg-green-600 hover:bg-green-700 text-white w-full p-1 rounded flex items-center justify-center"
           >
             <FaPlus />
           </button>
@@ -154,13 +152,14 @@ console.log('cart id', cartItemDetails?._id)
       ) : (
         <button
           onClick={handleAddToCart}
-          className="btn-primary text-white px-2 lg:px-4 py-1 rounded"
+          className="bg-[#0059b3]  hover:bg-[#005ab3f5]  text-white w-full h-full px-2 py-1 rounded flex items-center justify-center"
         >
           {loading ? <Loading /> : "Add"}
         </button>
       )}
     </div>
   );
+  
 };
 
 export default AddToCartButton;

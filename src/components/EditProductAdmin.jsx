@@ -12,6 +12,7 @@ import ViewImage from './ViewImage';
 import AddFieldComponent from './AddFieldComponent';
 import { MdDelete } from 'react-icons/md';
 import Swal from 'sweetalert2';
+import toast from 'react-hot-toast';
 
 const EditProductAdmin = ({ close ,data : propsData,fetchProductData}) => {
 
@@ -167,16 +168,14 @@ const EditProductAdmin = ({ close ,data : propsData,fetchProductData}) => {
         data: data,
       });
 
-      console.log('update data',response)
 
-      if (response.data.success) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Product Updated',
-          text: response.data.message,
-        });
-        if (close) close();
-        fetchProductData();
+     const {data:responseData} = response;
+
+      if (responseData.success) {
+        toast.success(responseData.message);
+        await fetchProductData()
+        close();
+  
         setData({
           name: '',
           image: [],
@@ -189,7 +188,9 @@ const EditProductAdmin = ({ close ,data : propsData,fetchProductData}) => {
           description: '',
           more_details: {},
         });
-      }
+    }
+        
+      
     } catch (error) {
       console.error('Error updating product:', error);
     }
@@ -269,7 +270,7 @@ const EditProductAdmin = ({ close ,data : propsData,fetchProductData}) => {
                               className='w-full h-full object-scale-down cursor-pointer'
                               onClick={() => setViewImageURL(img)}
                             />
-                            <div onClick={() => handleDeleteImage(index)} className='absolute bottom-0 right-0 p-1 bg-red-600 hover:bg-red-600 rounded text-white hidden group-hover:block cursor-pointer'>
+                            <div onClick={() => handleDeleteImage(index)} className='absolute bottom-0 right-0 p-1 bg-red-600 hover:bg-red-600 btn rounded text-white hidden group-hover:block cursor-pointer'>
                               <MdDelete />
                             </div>
                           </div>
@@ -461,7 +462,7 @@ const EditProductAdmin = ({ close ,data : propsData,fetchProductData}) => {
               </div>
 
               <button
-                className='bg-primary hover:bg-primary-200 py-2 rounded font-semibold'
+                className='btn-primary 0 py-2 rounded font-semibold'
               >
                 Update Product
               </button>

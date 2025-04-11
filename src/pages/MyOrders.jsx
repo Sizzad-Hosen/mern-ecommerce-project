@@ -5,6 +5,7 @@ import Axios from '@/utilis/Axios';
 import SummaryApi from '@/common/SummaryApi';
 import { useSelector } from 'react-redux';
 import AxiosToastError from '@/utilis/AxiosToastError';
+import Loading from '@/components/Loading';
 
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -59,7 +60,7 @@ const MyOrders = () => {
       </div>
 
       {loading ? (
-        <p className="p-4">Loading...</p>
+        <p className="p-4"><Loading></Loading></p>
       ) : orders.length === 0 ? (
         <p className="p-4">No orders found.</p>
       ) : (

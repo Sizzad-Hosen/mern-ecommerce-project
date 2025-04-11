@@ -10,6 +10,7 @@ import SummaryApi from '@/common/SummaryApi';
 import uploadImage from '@/utilis/uploadImage';
 import ViewImage from '@/components/ViewImage';
 import AddFieldComponent from '@/components/AddFieldComponent';
+import Loading from '@/components/Loading';
 
 const UploadProduct = () => {
   const [data, setData] = useState({
@@ -150,7 +151,7 @@ const UploadProduct = () => {
   };
 
   if (loading) {
-    return <span className="loading loading-ring loading-xl"></span>;
+    return <Loading></Loading>
   }
 
   return (
@@ -197,7 +198,7 @@ const UploadProduct = () => {
               >
                 <div className="text-center flex justify-center items-center flex-col">
                   {imageLoading ? (
-                    <span className="loading loading-ring loading-xl"></span>
+                   <Loading></Loading>
                   ) : (
                     <>
                       <FaCloudUploadAlt size={35} />

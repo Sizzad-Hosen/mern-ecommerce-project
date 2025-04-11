@@ -10,23 +10,22 @@ import SummaryApi from "@/common/SummaryApi";
 import AddAddress from "@/components/AddAdress";
 import { DisplayPriceInRupees } from "@/utilis/DisplayPriceInRupees";
 import AxiosToastError from "@/utilis/AxiosToastError";
-import { pricewithDiscount } from '@/utilis/PriceWithDiscount';
-import { data } from "react-router-dom";
-import { loadStripe } from '@stripe/stripe-js'
-
+import { pricewithDiscount } from "@/utilis/PriceWithDiscount";
+import { loadStripe } from "@stripe/stripe-js";
+import Loading from "@/components/Loading";
 
 const CheckoutPage = () => {
-  const user = useSelector((state) => state?.user.user); // fix for user
-
-   const router = useRouter();
+  const user = useSelector((state) => state?.user.user);
+  const router = useRouter();
 
   const [cartItem, setCartItem] = useState([]);
   const [openAddress, setOpenAddress] = useState(false);
   const [selectAddress, setSelectAddress] = useState(0);
-const [addressList , setAddressList]  = useState([])
+  const [addressList, setAddressList] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   // Fetch cart data
   const fetchCartData = useCallback(async () => {
-   
     try {
       const response = await Axios({
         ...SummaryApi.getToCart,
@@ -38,30 +37,29 @@ const [addressList , setAddressList]  = useState([])
     }
   }, [user?._id]);
 
-
+  // Fetch address data
   const fetchAddress = useCallback(async () => {
-   
     try {
       const response = await Axios({
         ...SummaryApi.getAddress,
-
         data: { userId: user._id },
-
       });
-   
-
       setAddressList(response.data.data || []);
     } catch (error) {
       AxiosToastError(error);
     }
-
   }, [user?._id]);
 
-
+  // Combined fetch
   useEffect(() => {
-    fetchCartData();
-    fetchAddress()
-  }, [fetchCartData]);
+    const fetchData = async () => {
+      setLoading(true);
+      await fetchCartData();
+      await fetchAddress();
+      setLoading(false);
+    };
+    fetchData();
+  }, [fetchCartData, fetchAddress]);
 
   const notDiscountTotalPrice = cartItem.reduce(
     (acc, item) => acc + item?.productId?.price * item.quantity,
@@ -78,7 +76,6 @@ const [addressList , setAddressList]  = useState([])
 
   const totalQty = cartItem.reduce((acc, item) => acc + item.quantity, 0);
 
-
   const handleCashOnDelivery = async () => {
     try {
       const response = await Axios({
@@ -93,14 +90,10 @@ const [addressList , setAddressList]  = useState([])
 
       const { data: responseData } = response;
 
-      console.log("data", responseData.data);
-
-
       if (responseData.success) {
         toast.success(responseData.message);
         router.push("/success");
-      }
-      else{
+      } else {
         router.push("/cancle");
       }
     } catch (error) {
@@ -108,81 +101,63 @@ const [addressList , setAddressList]  = useState([])
     }
   };
 
-const handleOnlinePayment = async () => {
-  try {
-    toast.loading('Redirecting to payment...')
+  const handleOnlinePayment = async () => {
+    try {
+      toast.loading("Redirecting to payment...");
 
-    // Log input values
-    console.log("cartItem:", cartItem);
-    console.log("addressList:", addressList);
-    console.log("selectAddress:", selectAddress);
-    console.log("totalPrice:", totalPrice);
+      const stripePublicKey = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY;
 
-    // ✅ Stripe public key (NEXT_PUBLIC_ is required for frontend use in Next.js)
-    const stripePublicKey = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY
+      if (!stripePublicKey) {
+        toast.dismiss();
+        toast.error("Stripe public key not found");
+        return;
+      }
 
-    if (!stripePublicKey) {
-      toast.dismiss()
-      toast.error('Stripe public key not found')
-      return
-    }
+      const stripe = await loadStripe(stripePublicKey);
 
-    console.log("Stripe Public Key:", stripePublicKey); // Check if it's correct
+      if (!stripe) {
+        toast.dismiss();
+        toast.error("Failed to load Stripe");
+        return;
+      }
 
-    const stripe = await loadStripe(stripePublicKey)
+      const response = await Axios({
+        ...SummaryApi.payment_url,
+        data: {
+          list_items: cartItem,
+          addressId: addressList[selectAddress]?._id,
+          subTotalAmt: totalPrice,
+          totalAmt: totalPrice,
+        },
+      });
 
-    if (!stripe) {
-      toast.dismiss()
-      toast.error('Failed to load Stripe')
-      return
-    }
+      const sessionId = response?.data?.id;
 
-    const response = await Axios({
-      ...SummaryApi.payment_url,
-      data: {
-        list_items: cartItem,
-        addressId: addressList[selectAddress]?._id,
-        subTotalAmt: totalPrice,
-        totalAmt: totalPrice,
-      },
-    });
-    
-    console.log("Stripe API Response:", response);
-    console.log("response.data:", response?.data);
-console.log("response.data.id:", response?.data?.id);
+      if (!sessionId) {
+        toast.dismiss();
+        toast.error("Stripe session ID not found");
+        return;
+      }
 
-    const sessionId = response?.data?.id;
-    
-    if (!sessionId) {
+      const result = await stripe.redirectToCheckout({ sessionId });
+
+      if (result?.error) {
+        toast.dismiss();
+        toast.error(result.error.message);
+        return;
+      }
+
+      if (fetchCartData) {
+        fetchCartData();
+      }
+
       toast.dismiss();
-      toast.error('Stripe session ID not found');
-      return;
+    } catch (error) {
+      console.error("[Stripe Payment Error]", error);
+      toast.dismiss();
+      toast.error("Payment failed. Please try again.");
     }
-    
-    const result = await stripe.redirectToCheckout({ sessionId });
-    
-
-    if (result?.error) {
-      toast.dismiss()
-      toast.error(result.error.message)
-      return
-    }
-
-    // ✅ Optional: Clear cart after initiating payment
-    if (fetchCartData) {
-      fetchCartData()
-    } else {
-      console.warn("fetchCartData is not defined");
-    }
-
-    toast.dismiss()
-
-  } catch (error) {
-    console.error('[Stripe Payment Error]', error)
-    toast.dismiss()
-    toast.error('Payment failed. Please try again.')
-  }
-}
+  };
 
   return (
     <section className="bg-blue-50">
@@ -191,31 +166,46 @@ console.log("response.data.id:", response?.data?.id);
         <div className="w-full">
           <h3 className="text-lg font-semibold">Choose your address</h3>
           <div className="bg-white p-2 grid gap-4">
-            {addressList.map((address, index) => (
-              <label htmlFor={"address" + index} className={!address.status ? "hidden" : ""} key={index}>
-                <div className="border rounded p-3 flex gap-3 hover:bg-blue-50">
-                  <div>
-                    <input
-                      id={"address" + index}
-                      type="radio"
-                      value={index}
-                      onChange={(e) => setSelectAddress(Number(e.target.value))}
-                      name="address"
-                      checked={selectAddress === index}
-                    />
+            {loading ? (
+              <Loading />
+            ) : (
+              addressList.map((address, index) => (
+                <label
+                  htmlFor={"address" + index}
+                  className={!address.status ? "hidden" : ""}
+                  key={index}
+                >
+                  <div className="border rounded p-3 flex gap-3 hover:bg-blue-50">
+                    <div>
+                      <input
+                        id={"address" + index}
+                        type="radio"
+                        value={index}
+                        onChange={(e) =>
+                          setSelectAddress(Number(e.target.value))
+                        }
+                        name="address"
+                        checked={selectAddress === index}
+                      />
+                    </div>
+                    <div>
+                      <p>{address.address_line}</p>
+                      <p>{address.city}</p>
+                      <p>{address.state}</p>
+                      <p>
+                        {address.country} - {address.pincode}
+                      </p>
+                      <p>{address.mobile}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p>{address.address_line}</p>
-                    <p>{address.city}</p>
-                    <p>{address.state}</p>
-                    <p>{address.country} - {address.pincode}</p>
-                    <p>{address.mobile}</p>
-                  </div>
-                </div>
-              </label>
-            ))}
+                </label>
+              ))
+            )}
 
-            <div onClick={() => setOpenAddress(true)} className="h-16 bg-blue-50 border-2 border-dashed flex justify-center items-center cursor-pointer">
+            <div
+              onClick={() => setOpenAddress(true)}
+              className="h-16 bg-blue-50 border-2 border-dashed flex justify-center items-center cursor-pointer"
+            >
               Add address
             </div>
           </div>
@@ -229,7 +219,9 @@ console.log("response.data.id:", response?.data?.id);
             <div className="flex gap-4 justify-between ml-1">
               <p>Items total</p>
               <p className="flex items-center gap-2">
-                <span className="line-through text-neutral-400">{DisplayPriceInRupees(notDiscountTotalPrice)}</span>
+                <span className="line-through text-neutral-400">
+                  {DisplayPriceInRupees(notDiscountTotalPrice)}
+                </span>
                 <span>{DisplayPriceInRupees(totalPrice)}</span>
               </p>
             </div>
@@ -247,10 +239,16 @@ console.log("response.data.id:", response?.data?.id);
             </div>
           </div>
           <div className="w-full flex flex-col gap-4 mt-4">
-            <button className="py-2 px-4 btn-primary rounded text-white font-semibold" onClick={handleOnlinePayment}>
+            <button
+              className="py-2 px-4 btn-primary rounded text-white font-semibold"
+              onClick={handleOnlinePayment}
+            >
               Online Payment
             </button>
-            <button className="py-2 px-4 border-2 border-[#0059b3]  font-semibold text-[#0059b3]  hover:bg-[#0059b3]  hover:text-white" onClick={handleCashOnDelivery}>
+            <button
+              className="py-2 px-4 border-2 border-[#0059b3] font-semibold text-[#0059b3] hover:bg-[#0059b3] hover:text-white"
+              onClick={handleCashOnDelivery}
+            >
               Cash on Delivery
             </button>
           </div>
