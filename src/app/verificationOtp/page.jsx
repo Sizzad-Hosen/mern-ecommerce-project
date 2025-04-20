@@ -1,15 +1,14 @@
-import OtpVerification from '@/components/VerificationOtp'
-import React from 'react'
+import React, { Suspense } from 'react';
+import OtpVerification from '@/components/VerificationOtp';
 
-
-
-const page = () => {
+const Page = () => {
   return (
     <div>
-    <OtpVerification></OtpVerification>
-
+      <Suspense fallback={<div>Loading...</div>}>
+        <OtpVerification />
+      </Suspense>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default Page;

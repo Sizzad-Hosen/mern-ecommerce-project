@@ -58,7 +58,7 @@ const DashboardLayout = ({ children }) => {
             <li
               key={item.path}
               className={`flex items-center cursor-pointer p-2 rounded-lg transition-colors ${
-                pathname === item.path ? "bg-primary text-white" : "hover:bg-primary hover:text-white"
+                pathname === item.path ? "bg-[#0059b3] text-white" : "hover:bg-[#0059b3] hover:text-white"
               }`}
               onClick={() => {
                 router.push(item.path);

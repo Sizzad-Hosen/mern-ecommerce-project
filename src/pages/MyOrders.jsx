@@ -8,6 +8,18 @@ import AxiosToastError from '@/utilis/AxiosToastError';
 import Loading from '@/components/Loading';
 
 const MyOrders = () => {
+
+  const [isClient, setIsClient] = useState(false); // Track if it's on client-side
+
+  // Only access the store on the client side
+  useEffect(() => {
+    setIsClient(true); // set to true after the component mounts
+  }, []);
+
+  if (!isClient) {
+    return null; // or loading state, if you want to display a loading spinner while waiting for the client-side render
+  }
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 

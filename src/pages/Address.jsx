@@ -14,6 +14,17 @@ import EditAddressDetails from '@/components/EditAddressDetails';
 // import EditAddressDetails from './EditAddressDetails';
 
 const Address = () => {
+  const [isClient, setIsClient] = useState(false); // Track if it's on client-side
+
+  // Only access the store on the client side
+  useEffect(() => {
+    setIsClient(true); // set to true after the component mounts
+  }, []);
+
+  if (!isClient) {
+    return null; // or loading state, if you want to display a loading spinner while waiting for the client-side render
+  }
+
   const [addressList, setAddressList] = useState([]);
   const user = useSelector((state) => state?.user?.user); // Safe access
   const [openAddress, setOpenAddress] = useState(false);

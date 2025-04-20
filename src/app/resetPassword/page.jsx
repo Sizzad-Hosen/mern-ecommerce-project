@@ -1,10 +1,18 @@
-import ResetPassword from '@/components/ResetPassword'
-import React from 'react'
+"use client"
+import React, { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 
-const page = () => {
+const ResetPasswordPage = () => {
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
+
+  return <div>Token: {token}</div>;
+};
+
+export default function ResetPasswordWrapper() {
   return (
-    <ResetPassword></ResetPassword>
-  )
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordPage />
+    </Suspense>
+  );
 }
-
-export default page

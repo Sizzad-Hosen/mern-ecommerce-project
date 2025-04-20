@@ -228,7 +228,7 @@ const UploadSubCategoryModel = () => {
 
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+                className="w-full btn-primary text-white font-semibold py-2 rounded disabled:bg-gray-300 disabled:cursor-not-allowed transition"
                 disabled={
                   !subCategoryData.name ||
                   !subCategoryData.image ||

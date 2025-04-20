@@ -15,6 +15,18 @@ import { loadStripe } from "@stripe/stripe-js";
 import Loading from "@/components/Loading";
 
 const CheckoutPage = () => {
+
+  const [isClient, setIsClient] = useState(false); // Track if it's on client-side
+
+  // Only access the store on the client side
+  useEffect(() => {
+    setIsClient(true); // set to true after the component mounts
+  }, []);
+
+  if (!isClient) {
+    return null; // or loading state, if you want to display a loading spinner while waiting for the client-side render
+  }
+
   const user = useSelector((state) => state?.user.user);
   const router = useRouter();
 
@@ -93,6 +105,7 @@ const CheckoutPage = () => {
       if (responseData.success) {
         toast.success(responseData.message);
         router.push("/success");
+       
       } else {
         router.push("/cancle");
       }
@@ -104,23 +117,23 @@ const CheckoutPage = () => {
   const handleOnlinePayment = async () => {
     try {
       toast.loading("Redirecting to payment...");
-
+  
       const stripePublicKey = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY;
-
+  
       if (!stripePublicKey) {
         toast.dismiss();
         toast.error("Stripe public key not found");
         return;
       }
-
+  
       const stripe = await loadStripe(stripePublicKey);
-
+  
       if (!stripe) {
         toast.dismiss();
         toast.error("Failed to load Stripe");
         return;
       }
-
+  
       const response = await Axios({
         ...SummaryApi.payment_url,
         data: {
@@ -130,27 +143,33 @@ const CheckoutPage = () => {
           totalAmt: totalPrice,
         },
       });
-
+  
+      console.log('res', response);
+      console.log('data', response.data); // ✅ fixed
+  
       const sessionId = response?.data?.id;
-
+      console.log('sessionId', sessionId);
+  
       if (!sessionId) {
         toast.dismiss();
         toast.error("Stripe session ID not found");
         return;
       }
-
+  
       const result = await stripe.redirectToCheckout({ sessionId });
-
+  
+      console.log('result', result);
+  
       if (result?.error) {
         toast.dismiss();
         toast.error(result.error.message);
         return;
       }
-
+  
       if (fetchCartData) {
         fetchCartData();
       }
-
+  
       toast.dismiss();
     } catch (error) {
       console.error("[Stripe Payment Error]", error);
@@ -158,6 +177,7 @@ const CheckoutPage = () => {
       toast.error("Payment failed. Please try again.");
     }
   };
+  
 
   return (
     <section className="bg-blue-50">
