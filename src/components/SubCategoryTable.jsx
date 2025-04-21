@@ -1,8 +1,10 @@
+
+"use client"
 import SummaryApi from "@/common/SummaryApi";
 import Axios from "@/utilis/Axios";
 import AxiosToastError from "@/utilis/AxiosToastError";
 import { useState } from "react";
-import toast from "react-hot-toast";
+
 import EditSubCategory from "./EditSubCategory";
 import Swal from "sweetalert2";
 

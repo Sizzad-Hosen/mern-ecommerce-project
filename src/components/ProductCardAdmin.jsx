@@ -3,8 +3,6 @@
 import React, { useState } from 'react'
 import EditProductAdmin from './EditProductAdmin'
 import Swal from 'sweetalert2'
-import { IoClose } from 'react-icons/io5'
-import toast from 'react-hot-toast'
 import SummaryApi from '@/common/SummaryApi'
 import Axios from '@/utilis/Axios'
 import AxiosToastError from '@/utilis/AxiosToastError'

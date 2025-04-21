@@ -1,15 +1,13 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { FaCloudUploadAlt } from "react-icons/fa";
-import { useSelector } from 'react-redux';
+
 import { IoClose } from "react-icons/io5";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import AxiosToastError from '@/utilis/AxiosToastError';
 import Axios from '@/utilis/Axios';
 import SummaryApi from '@/common/SummaryApi';
 import uploadImage from '@/utilis/uploadImage';
-import ViewImage from '@/components/ViewImage';
-import AddFieldComponent from '@/components/AddFieldComponent';
 import Loading from '@/components/Loading';
 
 const UploadProduct = () => {
@@ -27,7 +25,7 @@ const UploadProduct = () => {
   });
 
   const [imageLoading, setImageLoading] = useState(false);
-  const [viewImageURL, setViewImageURL] = useState("");
+ 
 
   const [allCategory, setAllCategory] = useState([]);
   const [allSubCategory, setSubAllCategory] = useState([]);
@@ -35,7 +33,6 @@ const UploadProduct = () => {
   const [selectCategory, setSelectCategory] = useState("");
   const [selectSubCategory, setSelectSubCategory] = useState("");
 
-  const [openAddField, setOpenAddField] = useState(false);
   const [fieldName, setFieldName] = useState("");
   const [loading, setLoading] = useState(false);
 

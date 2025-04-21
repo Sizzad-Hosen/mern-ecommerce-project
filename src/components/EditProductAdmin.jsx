@@ -11,7 +11,7 @@ import { IoClose } from 'react-icons/io5';
 import ViewImage from './ViewImage';
 import AddFieldComponent from './AddFieldComponent';
 import { MdDelete } from 'react-icons/md';
-import Swal from 'sweetalert2';
+
 import toast from 'react-hot-toast';
 
 const EditProductAdmin = ({ close ,data : propsData,fetchProductData}) => {

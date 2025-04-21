@@ -1,3 +1,7 @@
+
+
+"use client"
+
 import React, { Suspense } from 'react';
 import OtpVerification from '@/components/VerificationOtp';
 

@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
-import { useSelector } from "react-redux";
+
 import SummaryApi from "@/common/SummaryApi";
 import Axios from "@/utilis/Axios";
 import AxiosToastError from "@/utilis/AxiosToastError";
