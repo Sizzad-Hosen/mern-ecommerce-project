@@ -1,6 +1,7 @@
 const nextConfig = {
+  reactStrictMode: false, // ✅ Place this inside the config object
   images: {
-    domains: ['i.postimg.cc', 'res.cloudinary.com'], // Add your allowed image domains here
+    domains: ['i.postimg.cc', 'res.cloudinary.com'], // ✅ Add allowed domains here
   },
 };
 

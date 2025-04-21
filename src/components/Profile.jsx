@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FaRegUserCircle } from "react-icons/fa";
-import { setUserDetails, updatedAvatar } from "@/redux/slices/userSlice";
+import { setUserDetails} from "@/redux/slices/userSlice";
 import UserProfileAvatarEdit from "./UserProfileAvatarEdit";
 import SummaryApi from "@/common/SummaryApi";
 import Axios from "@/utilis/Axios";
