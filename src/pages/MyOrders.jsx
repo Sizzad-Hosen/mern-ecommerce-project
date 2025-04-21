@@ -11,28 +11,22 @@ const MyOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isClient, setIsClient] = useState(false);
+
   const itemsPerPage = 5;
+  const user = useSelector((state) => state.user.user);
 
-  const [userId, setUserId] = useState(null);
-
-  // ✅ Only set userId on client after mount to prevent hydration mismatch
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("persist:root"))?.user;
-    if (user) {
-      const parsedUser = JSON.parse(user);
-      setUserId(parsedUser?.user?._id);
-    }
+    setIsClient(true);
   }, []);
 
   const fetchOrder = async () => {
     try {
       const response = await Axios({
         ...SummaryApi.getOrderItem,
-        data: { userId },
+        data: { userId: user._id },
       });
-
-      const { data: responseData } = response;
-      setOrders(responseData?.data || []);
+      setOrders(response.data?.data || []);
     } catch (error) {
       AxiosToastError(error);
     } finally {
@@ -41,14 +35,22 @@ const MyOrders = () => {
   };
 
   useEffect(() => {
-    if (userId) {
+    if (user?._id) {
       fetchOrder();
     }
-  }, [userId]);
+  }, [user?._id]);
 
   const totalPages = Math.ceil(orders.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const selectedOrders = orders.slice(startIndex, startIndex + itemsPerPage);
+
+  const handlePrev = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
 
   return (
     <div>
@@ -56,8 +58,10 @@ const MyOrders = () => {
         <h1>My Orders</h1>
       </div>
 
-      {loading ? (
-        <p className="p-4"><Loading /></p>
+      {!isClient ? (
+        <div className="p-4">Loading...</div>
+      ) : loading ? (
+        <div className="p-4"><Loading /></div>
       ) : orders.length === 0 ? (
         <p className="p-4">No orders found.</p>
       ) : (
@@ -78,19 +82,17 @@ const MyOrders = () => {
 
           <div className="flex justify-center gap-4 mt-6">
             <button
-              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+              onClick={handlePrev}
               disabled={currentPage === 1}
               className="px-4 py-1 btn-primary rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
             >
               Previous
             </button>
-
             <span className="font-semibold">
               Page {currentPage} of {totalPages}
             </span>
-
             <button
-              onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+              onClick={handleNext}
               disabled={currentPage === totalPages}
               className="px-4 py-1 btn-primary rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
             >

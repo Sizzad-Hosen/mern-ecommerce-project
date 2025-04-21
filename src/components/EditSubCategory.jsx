@@ -171,7 +171,7 @@ const EditSubCategory = ({ close, data,fetchData}) => {
                             {/* Display selected categories */}
                             <div className="flex flex-wrap gap-2">
                                 {subCategoryData.category.map((cat) => (
-                                    <p key={cat._id} className="bg-white shadow-md px-1 m-1 flex items-center gap-2">
+                                    <div key={cat._id} className="bg-white shadow-md px-1 m-1 flex items-center gap-2">
                                         {cat.name}
                                         <div
                                             className="cursor-pointer hover:text-red-600"
@@ -179,7 +179,7 @@ const EditSubCategory = ({ close, data,fetchData}) => {
                                         >
                                             <IoClose size={20} />
                                         </div>
-                                    </p>
+                                    </div>
                                 ))}
                             </div>
 

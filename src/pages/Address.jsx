@@ -1,4 +1,4 @@
-'use client';
+"use client"
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -12,31 +12,17 @@ import AddAddress from '@/components/AddAdress';
 import EditAddressDetails from '@/components/EditAddressDetails';
 
 const Address = () => {
-  const [isClient, setIsClient] = useState(false);
   const [addressList, setAddressList] = useState([]);
   const [openAddress, setOpenAddress] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [editData, setEditData] = useState({});
 
-  // Delay client-only logic until after mount
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
   // Access Redux state
   const user = useSelector((state) => state?.user?.user);
 
-  // Handle case where Redux state isn't ready
-  if (!isClient) return null;
-  if (!user?._id) {
-    return (
-      <div className='text-center py-4 text-gray-600'>
-        Loading user information...
-      </div>
-    );
-  }
-
+  // Ensure hooks are always called in the same order
   const fetchAddress = useCallback(async () => {
+    if (!user?._id) return; // Avoid fetching if user is not available
     try {
       const response = await Axios({
         ...SummaryApi.getAddress,
@@ -50,8 +36,10 @@ const Address = () => {
   }, [user._id]);
 
   useEffect(() => {
-    fetchAddress();
-  }, [fetchAddress]);
+    if (user?._id) {
+      fetchAddress();
+    }
+  }, [user._id, fetchAddress]);
 
   const handleDisableAddress = async (id) => {
     try {
@@ -68,6 +56,14 @@ const Address = () => {
       AxiosToastError(error);
     }
   };
+
+  if (!user?._id) {
+    return (
+      <div className="text-center py-4 text-gray-600">
+        Loading user information...
+      </div>
+    );
+  }
 
   return (
     <div>
