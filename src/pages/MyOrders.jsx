@@ -8,35 +8,30 @@ import AxiosToastError from '@/utilis/AxiosToastError';
 import Loading from '@/components/Loading';
 
 const MyOrders = () => {
-
-  const [isClient, setIsClient] = useState(false); // Track if it's on client-side
-
-  // Only access the store on the client side
-  useEffect(() => {
-    setIsClient(true); // set to true after the component mounts
-  }, []);
-
-  if (!isClient) {
-    return null; // or loading state, if you want to display a loading spinner while waiting for the client-side render
-  }
-
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  const user = useSelector((state) => state.user.user);
+  const [userId, setUserId] = useState(null);
+
+  // ✅ Only set userId on client after mount to prevent hydration mismatch
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("persist:root"))?.user;
+    if (user) {
+      const parsedUser = JSON.parse(user);
+      setUserId(parsedUser?.user?._id);
+    }
+  }, []);
 
   const fetchOrder = async () => {
     try {
       const response = await Axios({
         ...SummaryApi.getOrderItem,
-        data: { userId: user._id },
+        data: { userId },
       });
 
       const { data: responseData } = response;
-
       setOrders(responseData?.data || []);
     } catch (error) {
       AxiosToastError(error);
@@ -46,24 +41,14 @@ const MyOrders = () => {
   };
 
   useEffect(() => {
-    if (user?._id) {
+    if (userId) {
       fetchOrder();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?._id]);
+  }, [userId]);
 
-  // Pagination Logic
   const totalPages = Math.ceil(orders.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const selectedOrders = orders.slice(startIndex, startIndex + itemsPerPage);
-
-  const handlePrev = () => {
-    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
-  };
-
-  const handleNext = () => {
-    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
-  };
 
   return (
     <div>
@@ -72,7 +57,7 @@ const MyOrders = () => {
       </div>
 
       {loading ? (
-        <p className="p-4"><Loading></Loading></p>
+        <p className="p-4"><Loading /></p>
       ) : orders.length === 0 ? (
         <p className="p-4">No orders found.</p>
       ) : (
@@ -91,10 +76,9 @@ const MyOrders = () => {
             </div>
           ))}
 
-          {/* Pagination Buttons */}
           <div className="flex justify-center gap-4 mt-6">
             <button
-              onClick={handlePrev}
+              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
               className="px-4 py-1 btn-primary rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
             >
@@ -106,7 +90,7 @@ const MyOrders = () => {
             </span>
 
             <button
-              onClick={handleNext}
+              onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
               disabled={currentPage === totalPages}
               className="px-4 py-1 btn-primary rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
             >

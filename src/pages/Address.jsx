@@ -1,6 +1,7 @@
-"use client"
-import React, { useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+'use client';
+
+import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { MdDelete, MdEdit } from 'react-icons/md';
 
@@ -10,46 +11,47 @@ import AxiosToastError from '@/utilis/AxiosToastError';
 import AddAddress from '@/components/AddAdress';
 import EditAddressDetails from '@/components/EditAddressDetails';
 
-
-// import EditAddressDetails from './EditAddressDetails';
-
 const Address = () => {
-  const [isClient, setIsClient] = useState(false); // Track if it's on client-side
-
-  // Only access the store on the client side
-  useEffect(() => {
-    setIsClient(true); // set to true after the component mounts
-  }, []);
-
-  if (!isClient) {
-    return null; // or loading state, if you want to display a loading spinner while waiting for the client-side render
-  }
-
+  const [isClient, setIsClient] = useState(false);
   const [addressList, setAddressList] = useState([]);
-  const user = useSelector((state) => state?.user?.user); // Safe access
   const [openAddress, setOpenAddress] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [editData, setEditData] = useState({});
+
+  // Delay client-only logic until after mount
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Access Redux state
+  const user = useSelector((state) => state?.user?.user);
+
+  // Handle case where Redux state isn't ready
+  if (!isClient) return null;
+  if (!user?._id) {
+    return (
+      <div className='text-center py-4 text-gray-600'>
+        Loading user information...
+      </div>
+    );
+  }
 
   const fetchAddress = useCallback(async () => {
     try {
       const response = await Axios({
         ...SummaryApi.getAddress,
-        data: { userId: user?._id },
+        data: { userId: user._id },
       });
-
       console.log('Fetched address:', response.data);
       setAddressList(response.data.data || []);
     } catch (error) {
       AxiosToastError(error);
     }
-  }, [user?._id]);
+  }, [user._id]);
 
   useEffect(() => {
-    if (user?._id) {
-      fetchAddress();
-    }
-  }, [fetchAddress, user?._id]);
+    fetchAddress();
+  }, [fetchAddress]);
 
   const handleDisableAddress = async (id) => {
     try {
@@ -80,8 +82,8 @@ const Address = () => {
       </div>
 
       <div className='bg-blue-50 p-2 grid gap-4'>
-        {addressList.map((address, index) => (
-          address.status && (
+        {addressList.map((address, index) =>
+          address.status ? (
             <div
               key={address._id || index}
               className='border rounded p-3 flex gap-3 bg-white'
@@ -90,7 +92,9 @@ const Address = () => {
                 <p>{address.address_line}</p>
                 <p>{address.city}</p>
                 <p>{address.state}</p>
-                <p>{address.country} - {address.pincode}</p>
+                <p>
+                  {address.country} - {address.pincode}
+                </p>
                 <p>{address.mobile}</p>
               </div>
 
@@ -112,8 +116,8 @@ const Address = () => {
                 </button>
               </div>
             </div>
-          )
-        ))}
+          ) : null
+        )}
 
         <div
           onClick={() => setOpenAddress(true)}
@@ -123,9 +127,15 @@ const Address = () => {
         </div>
       </div>
 
+      {/* Modals */}
       {openAddress && <AddAddress close={() => setOpenAddress(false)} />}
-      {openEdit && <EditAddressDetails fetchAddress={fetchAddress} data={editData} close={() => setOpenEdit(false)} />}
-
+      {openEdit && (
+        <EditAddressDetails
+          fetchAddress={fetchAddress}
+          data={editData}
+          close={() => setOpenEdit(false)}
+        />
+      )}
     </div>
   );
 };

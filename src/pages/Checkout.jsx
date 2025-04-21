@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { loadStripe } from "@stripe/stripe-js";
 
 import Axios from "@/utilis/Axios";
 import SummaryApi from "@/common/SummaryApi";
@@ -11,32 +12,23 @@ import AddAddress from "@/components/AddAdress";
 import { DisplayPriceInRupees } from "@/utilis/DisplayPriceInRupees";
 import AxiosToastError from "@/utilis/AxiosToastError";
 import { pricewithDiscount } from "@/utilis/PriceWithDiscount";
-import { loadStripe } from "@stripe/stripe-js";
 import Loading from "@/components/Loading";
 
 const CheckoutPage = () => {
-
-  const [isClient, setIsClient] = useState(false); // Track if it's on client-side
-
-  // Only access the store on the client side
-  useEffect(() => {
-    setIsClient(true); // set to true after the component mounts
-  }, []);
-
-  if (!isClient) {
-    return null; // or loading state, if you want to display a loading spinner while waiting for the client-side render
-  }
-
-  const user = useSelector((state) => state?.user.user);
-  const router = useRouter();
-
+  const [isClient, setIsClient] = useState(false);
   const [cartItem, setCartItem] = useState([]);
   const [openAddress, setOpenAddress] = useState(false);
   const [selectAddress, setSelectAddress] = useState(0);
   const [addressList, setAddressList] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch cart data
+  const user = useSelector((state) => state?.user.user);
+  const router = useRouter();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const fetchCartData = useCallback(async () => {
     try {
       const response = await Axios({
@@ -49,7 +41,6 @@ const CheckoutPage = () => {
     }
   }, [user?._id]);
 
-  // Fetch address data
   const fetchAddress = useCallback(async () => {
     try {
       const response = await Axios({
@@ -62,7 +53,6 @@ const CheckoutPage = () => {
     }
   }, [user?._id]);
 
-  // Combined fetch
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -100,12 +90,9 @@ const CheckoutPage = () => {
         },
       });
 
-      const { data: responseData } = response;
-
-      if (responseData.success) {
-        toast.success(responseData.message);
+      if (response?.data?.success) {
+        toast.success(response.data.message);
         router.push("/success");
-       
       } else {
         router.push("/cancle");
       }
@@ -117,23 +104,21 @@ const CheckoutPage = () => {
   const handleOnlinePayment = async () => {
     try {
       toast.loading("Redirecting to payment...");
-  
+
       const stripePublicKey = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY;
-  
       if (!stripePublicKey) {
         toast.dismiss();
         toast.error("Stripe public key not found");
         return;
       }
-  
+
       const stripe = await loadStripe(stripePublicKey);
-  
       if (!stripe) {
         toast.dismiss();
         toast.error("Failed to load Stripe");
         return;
       }
-  
+
       const response = await Axios({
         ...SummaryApi.payment_url,
         data: {
@@ -143,33 +128,22 @@ const CheckoutPage = () => {
           totalAmt: totalPrice,
         },
       });
-  
-      console.log('res', response);
-      console.log('data', response.data); // ✅ fixed
-  
+
       const sessionId = response?.data?.id;
-      console.log('sessionId', sessionId);
-  
       if (!sessionId) {
         toast.dismiss();
         toast.error("Stripe session ID not found");
         return;
       }
-  
+
       const result = await stripe.redirectToCheckout({ sessionId });
-  
-      console.log('result', result);
-  
       if (result?.error) {
         toast.dismiss();
         toast.error(result.error.message);
         return;
       }
-  
-      if (fetchCartData) {
-        fetchCartData();
-      }
-  
+
+      await fetchCartData();
       toast.dismiss();
     } catch (error) {
       console.error("[Stripe Payment Error]", error);
@@ -177,7 +151,8 @@ const CheckoutPage = () => {
       toast.error("Payment failed. Please try again.");
     }
   };
-  
+
+  if (!isClient) return null;
 
   return (
     <section className="bg-blue-50">
@@ -189,39 +164,36 @@ const CheckoutPage = () => {
             {loading ? (
               <Loading />
             ) : (
-              addressList.map((address, index) => (
-                <label
-                  htmlFor={"address" + index}
-                  className={!address.status ? "hidden" : ""}
-                  key={index}
-                >
-                  <div className="border rounded p-3 flex gap-3 hover:bg-blue-50">
-                    <div>
-                      <input
-                        id={"address" + index}
-                        type="radio"
-                        value={index}
-                        onChange={(e) =>
-                          setSelectAddress(Number(e.target.value))
-                        }
-                        name="address"
-                        checked={selectAddress === index}
-                      />
+              addressList.map((address, index) =>
+                address.status ? (
+                  <label htmlFor={"address" + index} key={index}>
+                    <div className="border rounded p-3 flex gap-3 hover:bg-blue-50">
+                      <div>
+                        <input
+                          id={"address" + index}
+                          type="radio"
+                          value={index}
+                          onChange={(e) =>
+                            setSelectAddress(Number(e.target.value))
+                          }
+                          name="address"
+                          checked={selectAddress === index}
+                        />
+                      </div>
+                      <div>
+                        <p>{address.address_line}</p>
+                        <p>{address.city}</p>
+                        <p>{address.state}</p>
+                        <p>
+                          {address.country} - {address.pincode}
+                        </p>
+                        <p>{address.mobile}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p>{address.address_line}</p>
-                      <p>{address.city}</p>
-                      <p>{address.state}</p>
-                      <p>
-                        {address.country} - {address.pincode}
-                      </p>
-                      <p>{address.mobile}</p>
-                    </div>
-                  </div>
-                </label>
-              ))
+                  </label>
+                ) : null
+              )
             )}
-
             <div
               onClick={() => setOpenAddress(true)}
               className="h-16 bg-blue-50 border-2 border-dashed flex justify-center items-center cursor-pointer"
