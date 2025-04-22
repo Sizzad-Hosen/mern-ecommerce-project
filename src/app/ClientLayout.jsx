@@ -1,4 +1,4 @@
-'use client';
+'use client'; // ← This is missing and required
 
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/Shared/Navbar";

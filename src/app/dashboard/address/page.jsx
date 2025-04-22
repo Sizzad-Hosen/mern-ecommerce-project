@@ -1,14 +1,15 @@
-import AdminPermission from '@/components/AdminPermission'
-import Address from '@/pages/Address'
-import React from 'react'
+
+
+import AdminPermission from '@/components/AdminPermission';
+import Address from '@/pages/Address';
+
 
 const AddressPage = () => {
   return (
     <AdminPermission>
-   <Address></Address>
+      <Address />
     </AdminPermission>
- 
-  )
-}
+  );
+};
 
-export default AddressPage
+export default AddressPage;

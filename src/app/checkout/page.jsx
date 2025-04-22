@@ -1,10 +1,8 @@
-import CheckoutPage from '@/pages/Checkout'
-import React from 'react'
+import CheckoutPage from "@/pages/Checkout";
+
 
 const checkoutPage = () => {
-  return (
-  <CheckoutPage></CheckoutPage>
-  )
-}
+  return <CheckoutPage />;
+};
 
-export default checkoutPage
+export default checkoutPage;

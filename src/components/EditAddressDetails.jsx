@@ -11,7 +11,7 @@ import { IoClose } from "react-icons/io5";
 
 
 
-const EditAddressDetails = ({close, data, fetchAddress}) => {
+const EditAddressDetails = ({close, data, onUpdated}) => {
 
 
 
@@ -51,7 +51,7 @@ const EditAddressDetails = ({close, data, fetchAddress}) => {
                 if(close){
                     close()
                     reset()
-                    fetchAddress()
+                    onUpdated()
                 }
             }
         } catch (error) {

@@ -1,10 +1,11 @@
-import MyOrders from '@/pages/MyOrders'
-import React from 'react'
+// app/my-orders/page.jsx
+'use client';
 
-const page = () => {
-  return (
-    <MyOrders></MyOrders>
-  )
-}
+import MyOrders from "@/pages/MyOrders";
 
-export default page
+
+const Page = () => {
+  return <MyOrders />;
+};
+
+export default Page;

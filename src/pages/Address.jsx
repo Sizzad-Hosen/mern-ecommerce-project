@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -12,34 +12,35 @@ import AddAddress from '@/components/AddAdress';
 import EditAddressDetails from '@/components/EditAddressDetails';
 
 const Address = () => {
+  
   const [addressList, setAddressList] = useState([]);
   const [openAddress, setOpenAddress] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [editData, setEditData] = useState({});
 
-  // Access Redux state
   const user = useSelector((state) => state?.user?.user);
 
-  // Ensure hooks are always called in the same order
   const fetchAddress = useCallback(async () => {
-    if (!user?._id) return; // Avoid fetching if user is not available
+
+    if (!user?._id) return;
+
     try {
       const response = await Axios({
         ...SummaryApi.getAddress,
         data: { userId: user._id },
       });
-      console.log('Fetched address:', response.data);
+
       setAddressList(response.data.data || []);
     } catch (error) {
       AxiosToastError(error);
     }
-  }, [user._id]);
+  }, [user?._id]);
 
   useEffect(() => {
     if (user?._id) {
       fetchAddress();
     }
-  }, [user._id, fetchAddress]);
+  }, [user?._id, fetchAddress]);
 
   const handleDisableAddress = async (id) => {
     try {
@@ -124,14 +125,22 @@ const Address = () => {
       </div>
 
       {/* Modals */}
-      {openAddress && <AddAddress close={() => setOpenAddress(false)} />}
-      {openEdit && (
-        <EditAddressDetails
-          fetchAddress={fetchAddress}
-          data={editData}
-          close={() => setOpenEdit(false)}
+      {openAddress && (
+        <AddAddress
+          close={() => {
+            setOpenAddress(false);
+            fetchAddress(); // Refresh after adding
+          }}
         />
       )}
+        {openEdit && (
+          <EditAddressDetails
+            data={editData}
+            close={() => setOpenEdit(false)}
+            onUpdated={() => fetchAddress()} // ✅ FIXED HERE
+          />
+        )}
+
     </div>
   );
 };

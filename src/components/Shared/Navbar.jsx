@@ -10,7 +10,9 @@ import SummaryApi from "@/common/SummaryApi";
 import Axios from "@/utilis/Axios";
 import AxiosToastError from "@/utilis/AxiosToastError";
 import fetchUserDetails from "@/utilis/fetchUserDetails";
-import { setUser, clearUser } from "@/redux/slices/userSlice";
+
+ import { setUser, clearUser } from "@/redux/slices/userSlice";
+
 import { calculateTotalPrice } from "@/utilis/CalculatePrice";
 import Image from "next/image";
 
